@@ -1,4 +1,4 @@
-# Background Processing in PHP [![Build Status](https://travis-ci.com/deminy/background-processing-in-php.svg?branch=master)](https://travis-ci.com/deminy/background-processing-in-php) [![License](https://poser.pugx.org/deminy/background-processing-in-php/license.svg)](https://packagist.org/packages/deminy/background-processing-in-php)
+# Background Processing in PHP [![Build Status](https://travis-ci.com/deminy/background-processing-in-php.svg?branch=master)](https://travis-ci.com/deminy/background-processing-in-php) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/deminy/background-processing-in-php/blob/master/LICENSE)
 
 Technical discussion on background processing in PHP web applications with test code included.
 
