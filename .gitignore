@@ -1,0 +1,16 @@
+# Ignore PhpStorm files
+/.idea/
+
+# Ignore Visual Studio Code files
+/.vscode/
+
+# Ignore files under Mac
+.DS_Store
+
+# Ignore changes in file ./.env
+/.env
+
+# Ignore Composer files
+/composer.lock
+/composer.phar
+/vendor/

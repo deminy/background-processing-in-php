@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+    web:
+        image: richarvey/nginx-php-fpm:latest
+        env_file:
+          - ./.env
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx-site.conf:/etc/nginx/sites-available/default.conf
+            - .:/var/www/html

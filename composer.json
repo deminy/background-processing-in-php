@@ -1,0 +1,29 @@
+{
+  "name": "deminy/background-processing-in-php",
+  "description": "Technical discussion on background processing in PHP with test code included.",
+  "homepage": "https://github.com/deminy/background-processing-in-php",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Demin Yin",
+      "email": "deminy@deminy.net",
+      "homepage": "https://deminy.net"
+    }
+  ],
+  "license": "MIT",
+  "require": {
+    "crowdstar/background-processing": "~0.0.1"
+  },
+  "require-dev": {
+    "codeception/base": "~2.2",
+    "guzzlehttp/guzzle": ">=4.1.4 <7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "deminy\\BackgroundProcessing\\": "src/"
+    }
+  },
+  "config" : {
+    "optimize-autoloader": true
+  }
+}

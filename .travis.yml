@@ -1,0 +1,19 @@
+language: php
+
+php:
+  - 7.2
+  - 7.1
+  - 7.0
+
+services:
+  - docker
+
+before_install:
+  - echo PUID=2000 >  .env
+  - echo PGID=2000 >> .env
+  - docker-compose up -d
+  - docker ps -a
+  - composer update -n
+
+script:
+  - ./vendor/bin/codecept run api

@@ -1,0 +1,19 @@
+suites:
+    api:
+        actor: ApiTester
+        path: .
+        modules:
+            enabled:
+                - REST:
+                    url: http://127.0.0.1
+                    depends: PhpBrowser
+
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+
+settings:
+    shuffle: false
+    lint: true
