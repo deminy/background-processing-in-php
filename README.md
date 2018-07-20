@@ -62,14 +62,18 @@ may happen, and how to use registered shutdown functions in PHP-FPM without worr
 
 __5.__ Through a queue server or a job server.
 
-Same as #4, this could still slow down HTTP responses. One typical example is that when the queue server is connected
-through TCP directly and the PHP web server has terrible network connection at the time. This side effect could also be avoided
-in PHP-FPM, as mentioned in #4 and discussed in the following sections.
+This is a popular solution, especially for heavy tasks. However, same as #4, this could still slow down HTTP responses.
+One typical example is that when the queue server is connected through TCP directly and the PHP web server has terrible
+network connection at the time. This side effect could also be avoided in PHP-FPM, as mentioned in #4 and discussed in
+following sections.
 
 __6.__ Use function [fastcgi_finish_request()](http://php.net/fastcgi_finish_request) in PHP-FPM.
 
-This is our favorite approach, and we suggest to use package [crowdstar/background-processing](https://github.com/Crowdstar/background-processing)
+This is our favorite approach for lightweight background tasks, and we use package [crowdstar/background-processing](https://github.com/Crowdstar/background-processing)
 for that. Please check [the README file](https://packagist.org/packages/crowdstar/background-processing) in that package about possible side effects.
+
+If you choose #4 and #5 as you solution, you may still consider to call function _fastcgi_finish_request()_ or use
+package _crowdstar/background-processing_ at the end of your PHP application just to fasten HTTP responses.
 
 ## Execution Order of PHP Code
 
@@ -132,11 +136,12 @@ composer update --no-dev # You may run command "composer update" instead
 ```
 
 We have three tests discussed below, and each test includes two HTTP calls. One is to try to write same data to HTTP response
-and to a disk file, and the other one is to send disk file content to HTTP response after first HTTP call.
+and to a disk file, and the other one is to send disk file content to HTTP response after first HTTP call. Source code of
+those PHP endpoints can be found under folder _./www_.
 
 ### Test 1: How Does Function register_shutdown_function() Affect HTTP Responses?
 
-First, please run command _curl http://127.0.0.1/write1_ to write same data to HTTP response and a disk file. Here is
+First, please run command _curl 127.0.0.1/write1_ to write same data to HTTP response and a disk file. Here is
 what showed up in HTTP response:
 
 ```text
@@ -145,7 +150,7 @@ Executed in a function registered through register_shutdown_function().
 Executed in the destruct method of an object during the shutdown sequence.
 ```
 
-Next, please run command _curl http://127.0.0.1/read_ to print out what has been written in the disk file during previous
+Next, please run command _curl 127.0.0.1/read_ to print out what has been written in the disk file during previous
 HTTP request. The output should look like this:
 
 ```text
@@ -153,13 +158,19 @@ Executed when function exit() is called.
 Executed in a function registered through register_shutdown_function().
 Executed in the destruct method of an object during the shutdown sequence.
 ```
+
+What have we observed from the PHP code and the output?
+
+> Data explicitly printed out during PHP shutdown sequence (registered shutdown functions and destructor methods
+> of non-destroyed objects) are included in HTTP response, and your PHP code has to complete PHP shutdown
+> sequence first before sending back HTTP response to the client.
 
 ### Test 2: How Does Function fastcgi_finish_request() Affect HTTP Responses?
 
-First, please run command _curl http://127.0.0.1/write2_ to write same data to HTTP response and a disk file. This
+First, please run command _curl 127.0.0.1/write2_ to write same data to HTTP response and a disk file. This
 HTTP call should return an empty response back (nothing printed out).
 
-Next, please run command _curl http://127.0.0.1/read_ to print out what has been written in the disk file during previous
+Next, please run command _curl 127.0.0.1/read_ to print out what has been written in the disk file during previous
 HTTP request. The output should look like this:
 
 ```text
@@ -168,12 +179,18 @@ Executed when function exit() is called.
 Executed in the destruct method of an object during the shutdown sequence.
 ```
 
+What have we observed from the PHP code and the output?
+
+> Data explicitly printed out before function call fastcgi_finish_request() will be in your HTTP response,
+> and anything printed out after unction call fastcgi_finish_request() (especially those printed out during
+> PHP shutdown sequence) won't be send back to HTTP client.
+
 ### Test 3: What Happens When Function register_shutdown_function() and fastcgi_finish_request() Both in Use?
 
-First, please run command _curl http://127.0.0.1/write3_ to write same data to HTTP response and a disk file. This
+First, please run command _curl 127.0.0.1/write3_ to write same data to HTTP response and a disk file. This
 HTTP call should return an empty response back (nothing printed out).
 
-Next, please run command _curl http://127.0.0.1/read_ to print out what has been written in the disk file during previous
+Next, please run command _curl 127.0.0.1/read_ to print out what has been written in the disk file during previous
 HTTP request. The output should look like this:
 
 ```text
@@ -182,6 +199,14 @@ Executed when function exit() is called.
 Executed in a function registered through register_shutdown_function().
 Executed in the destruct method of an object during the shutdown sequence.
 ```
+
+What have we observed from the PHP code and the output?
+
+> We observed similar results as test 2, and we noticed that by calling function fastcgi_finish_request(),
+> we don't have to wait registered shutdown functions and destructor methods to finish during the PHP
+> shutdown sequence first before sending back HTTP response to the client. Because of this, calling function
+> fastcgi_finish_request() at the end of your PHP application could fasten your web application, typically
+> when you use shutdown functions to handle something like error handling.
 
 ## Conclusion
 
