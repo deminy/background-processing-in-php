@@ -181,8 +181,8 @@ Executed in the destruct method of an object during the shutdown sequence.
 
 What have we observed from the PHP code and the output?
 
-> Data explicitly printed out before function call fastcgi_finish_request() will be in your HTTP response,
-> and anything printed out after unction call fastcgi_finish_request() (especially those printed out during
+> Data explicitly printed out before function call _fastcgi_finish_request()_ will be in your HTTP response,
+> and anything printed out after function call _fastcgi_finish_request()_ (especially those printed out during
 > PHP shutdown sequence) won't be send back to HTTP client.
 
 ### Test 3: What Happens When Function register_shutdown_function() and fastcgi_finish_request() Both in Use?
@@ -202,10 +202,10 @@ Executed in the destruct method of an object during the shutdown sequence.
 
 What have we observed from the PHP code and the output?
 
-> We observed similar results as test 2, and we noticed that by calling function fastcgi_finish_request(),
+> We observed similar results as test 2, and we noticed that by calling function _fastcgi_finish_request()_,
 > we don't have to wait registered shutdown functions and destructor methods to finish during the PHP
 > shutdown sequence first before sending back HTTP response to the client. Because of this, calling function
-> fastcgi_finish_request() at the end of your PHP application could speed up HTTP responses, typically
+> _fastcgi_finish_request()_ at the end of your PHP application could speed up HTTP responses, typically
 > when you use shutdown functions to handle something like error handling.
 
 ## Conclusion
