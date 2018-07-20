@@ -73,7 +73,7 @@ This is our favorite approach for lightweight background tasks, and we use packa
 for that. Please check [the README file](https://packagist.org/packages/crowdstar/background-processing) in that package about possible side effects.
 
 If you choose #4 and #5 as you solution, you may still consider to call function _fastcgi_finish_request()_ or use
-package _crowdstar/background-processing_ at the end of your PHP application just to fasten HTTP responses.
+package _crowdstar/background-processing_ at the end of your PHP application just to make HTTP responses faster.
 
 ## Execution Order of PHP Code
 
@@ -205,7 +205,7 @@ What have we observed from the PHP code and the output?
 > We observed similar results as test 2, and we noticed that by calling function fastcgi_finish_request(),
 > we don't have to wait registered shutdown functions and destructor methods to finish during the PHP
 > shutdown sequence first before sending back HTTP response to the client. Because of this, calling function
-> fastcgi_finish_request() at the end of your PHP application could fasten your web application, typically
+> fastcgi_finish_request() at the end of your PHP application could speed up HTTP responses, typically
 > when you use shutdown functions to handle something like error handling.
 
 ## Conclusion
