@@ -10,7 +10,6 @@
       "homepage": "https://deminy.net"
     }
   ],
-  "license": "MIT",
   "require": {
     "crowdstar/background-processing": "~0.0.1"
   },
